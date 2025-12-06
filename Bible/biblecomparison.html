@@ -1,0 +1,1208 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Библейский компаратор | Сравнение переводов Библии</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ======================================
+    Стили из интерфейс.html
+    ======================================
+    */
+    :root {
+      --primary: #2c3e50;
+      --primary-dark: #1a252f;
+      --primary-light: #3498db;
+      --secondary: #8e44ad;
+      --accent: #e74c3c;
+      --success: #27ae60;
+      --text: #2c3e50;
+      --text-light: #7f8c8d;
+      --text-lighter: #95a5a6;
+      --border: #ecf0f1;
+      --bg: #f9f9f9;
+      --bg-light: #f8fafc;
+      --bg-dark: #f1f5f9;
+      --shadow: rgba(0, 0, 0, 0.08);
+      --shadow-hover: rgba(0, 0, 0, 0.12);
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+    
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+    
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      background-color: var(--bg); 
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* === ГЛАВНЫЙ КОНТЕЙНЕР === */
+    .main-container {
+      background: white; 
+      width: 94%; 
+      max-width: 1300px; 
+      border-radius: var(--radius); 
+      padding: 2rem 2.5rem; 
+      margin: 2.5rem auto;
+      box-shadow: 0 15px 35px var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    /* === ЗАГОЛОВОК === */
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.5px;
+    }
+    
+    .header-subtitle {
+      color: var(--text-light);
+      font-size: 1.1rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .header-icon {
+      color: var(--primary-light);
+      margin-right: 10px;
+      font-size: 1.8rem;
+      vertical-align: middle;
+    }
+
+    /* === ПАНЕЛЬ НАВИГАЦИИ === */
+    .bible-navigation {
+      background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-dark) 100%);
+      padding: 1.5rem; 
+      border-radius: var(--radius); 
+      border: 1px solid var(--border); 
+      margin-bottom: 2rem;
+      box-shadow: 0 5px 15px var(--shadow);
+    }
+    
+    .navigation-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .navigation-title i {
+      margin-right: 10px;
+      color: var(--secondary);
+    }
+    
+    .select-group {
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    
+    .form-group {
+      flex-grow: 1;
+      position: relative;
+    }
+    
+    .form-group.compact {
+      max-width: 140px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--primary-dark);
+    }
+    
+    select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      background-color: white;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237f8c8d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1.2em;
+    }
+    
+    select:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+    
+    /* === КНОПКИ === */
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+      border: none;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: 2px solid var(--primary);
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px var(--shadow-hover);
+    }
+    
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+    
+    .btn-outline:hover {
+      background: var(--primary);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px var(--shadow-hover);
+    }
+    
+    .btn-nav {
+      padding: 0.75rem 1.2rem;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    
+    .nav-buttons {
+      display: flex;
+      gap: 0.75rem;
+      align-self: flex-end;
+    }
+    
+    /* === ПЕРЕКЛЮЧАТЕЛИ ПЕРЕВОДОВ === */
+    .translations-container {
+      margin-bottom: 1.5rem;
+    }
+    
+    .translations-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .translations-title i {
+      margin-right: 10px;
+      color: var(--secondary);
+    }
+    
+    #translationCheckboxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      padding-top: 0.5rem;
+    }
+    
+    .translation-option {
+      position: relative;
+    }
+    
+    .translation-option input[type="checkbox"] {
+      display: none;
+    }
+    
+    .translation-option label {
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      padding: 0.6rem 1.2rem;
+      border-radius: 50px;
+      background-color: white;
+      border: 2px solid var(--border);
+      transition: all 0.3s ease;
+      font-weight: 500;
+      color: var(--text);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .translation-option input[type="checkbox"]:checked + label {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+      padding-right: 2.8rem;
+    }
+    
+    .translation-option input[type="checkbox"]:checked + label:after {
+      content: "✓";
+      position: absolute;
+      right: 1rem;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+    
+    .translation-option label:hover {
+      border-color: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px var(--shadow);
+    }
+    
+    /* === ЗАГОЛОВОК КОНТЕНТА === */
+    #modalTitle {
+      margin: 1.5rem 0 1.8rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      padding: 1rem;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-radius: var(--radius);
+      border-left: 5px solid var(--primary-light);
+    }
+    
+    /* === ОБЛАСТЬ КОНТЕНТА === */
+    #verseContent {
+      max-height: calc(100vh - 350px);
+      overflow-y: auto;
+      padding: 1.5rem;
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: inset 0 2px 5px var(--shadow);
+    }
+    
+    #verseContent::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    #verseContent::-webkit-scrollbar-track {
+      background: var(--bg-light);
+      border-radius: 10px;
+    }
+    
+    #verseContent::-webkit-scrollbar-thumb {
+      background: var(--primary-light);
+      border-radius: 10px;
+    }
+    
+    /* === СРАВНИТЕЛЬНАЯ СЕТКА (DESKTOP) === */
+    #comparisonGrid {
+      display: grid;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow-x: auto;
+      font-size: 0.95rem;
+      box-shadow: 0 5px 15px var(--shadow);
+    }
+    
+    .header-cell, .verse-num-cell, .verse-text-cell {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .header-row {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: contents;
+    }
+    
+    .header-cell {
+      text-align: center;
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 1rem;
+      padding: 1.2rem 1rem;
+    }
+    
+    .header-cell:last-child {
+      border-right: none;
+    }
+    
+    .verse-row {
+      display: contents;
+    }
+    
+    .verse-row:nth-child(even) > div:not(.verse-num-cell) {
+      background-color: #f8fafc;
+    }
+    
+    .verse-num {
+      background-color: #eef7ff;
+      font-weight: 700;
+      text-align: center;
+      border-right: 1px solid var(--border);
+      position: sticky;
+      left: 0;
+      z-index: 5;
+      color: var(--primary);
+    }
+    
+    .verse-num-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    
+    .verse-text-cell {
+      line-height: 1.7;
+      text-align: justify;
+      border-right: 1px solid var(--border);
+    }
+    
+    .verse-text-cell:last-child {
+      border-right: none;
+    }
+    
+    .verse-row:last-child > * {
+      border-bottom: none;
+    }
+    
+    /* Номер стиха в тексте (DESKTOP) */
+    .verse-text-cell .verse-text-number {
+      display: none;
+    }
+    
+    /* === ФУТЕР === */
+    .footer {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+    
+    .footer-info {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.5rem;
+    }
+    
+    .footer-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .footer-item i {
+      color: var(--primary-light);
+    }
+    
+    .copyright {
+      font-size: 0.85rem;
+      color: var(--text-lighter);
+    }
+    
+    /* === АДАПТИВНЫЕ СТИЛИ (MOBILE - МЕНЕЕ 768PX) === */
+    @media (max-width: 768px) {
+      .main-container {
+        width: 100%;
+        margin: 0;
+        padding: 1.2rem;
+        border-radius: 0;
+        box-shadow: none;
+        border: none;
+      }
+      
+      .header h1 {
+        font-size: 1.8rem;
+      }
+      
+      .header-subtitle {
+        font-size: 1rem;
+      }
+      
+      .bible-navigation {
+        margin-bottom: 1.5rem;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+      }
+      
+      .select-group {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .form-group.compact {
+        max-width: 100%;
+      }
+      
+      .nav-buttons {
+        align-self: stretch;
+        justify-content: space-between;
+      }
+      
+      .nav-buttons .btn {
+        flex: 1;
+        text-align: center;
+      }
+      
+      #verseContent {
+        max-height: calc(100vh - 320px);
+        padding: 1rem;
+        background: white;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+      }
+      
+      /* Преобразование сетки в список на мобильных */
+      #comparisonGrid {
+        display: block;
+        border: none;
+        overflow-x: hidden;
+        box-shadow: none;
+      }
+      
+      .header-row {
+        display: none;
+      }
+      
+      .verse-row {
+        display: block;
+        margin-bottom: 1.5rem;
+        padding: 0;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background-color: white;
+        box-shadow: 0 3px 10px var(--shadow);
+        overflow: hidden;
+      }
+      
+      .verse-num-cell {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: white;
+        border-radius: 0;
+        padding: 1rem;
+        margin-bottom: 0;
+        font-size: 1.2rem;
+        position: sticky;
+        top: 0;
+        left: 0;
+        z-index: 2;
+        border-right: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+      }
+      
+      .verse-num {
+        position: static;
+        background-color: transparent;
+      }
+      
+      .verse-text-cell {
+        display: block;
+        padding: 1.2rem;
+        border: none;
+        border-bottom: 1px solid var(--border);
+        border-radius: 0;
+        margin-bottom: 0;
+        background-color: white;
+        line-height: 1.7;
+        text-align: justify;
+      }
+      
+      .verse-text-cell:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+      
+      .verse-text-cell::before {
+        content: attr(data-translation-name);
+        display: block;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
+        font-size: 1rem;
+      }
+      
+      .verse-text-cell .verse-text-number {
+        display: inline;
+        font-weight: bold;
+        color: var(--primary-light);
+        margin-right: 0.4rem;
+        background-color: #eef7ff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+      }
+      
+      .footer-info {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+    
+    /* === АНИМАЦИЯ ЗАГРУЗКИ === */
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+    }
+    
+    .loading-spinner {
+      border: 4px solid var(--border);
+      border-top: 4px solid var(--primary-light);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1.5rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* === СТАТУС-СООБЩЕНИЯ === */
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-light);
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--border);
+    }
+    
+    .error-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--accent);
+      background-color: rgba(231, 76, 60, 0.05);
+      border-radius: var(--radius);
+      border: 1px solid rgba(231, 76, 60, 0.2);
+    }
+    
+    .error-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    
+    /* === ТЕМНЫЙ РЕЖИМ (ОПЦИОНАЛЬНО) === */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary: #3498db;
+        --primary-dark: #2980b9;
+        --primary-light: #5dade2;
+        --secondary: #9b59b6;
+        --accent: #e74c3c;
+        --text: #ecf0f1;
+        --text-light: #bdc3c7;
+        --text-lighter: #95a5a6;
+        --border: #34495e;
+        --bg: #1a1a2e;
+        --bg-light: #16213e;
+        --bg-dark: #0f3460;
+        --shadow: rgba(0, 0, 0, 0.3);
+        --shadow-hover: rgba(0, 0, 0, 0.4);
+      }
+      
+      body {
+        background-color: var(--bg-dark);
+      }
+      
+      .main-container {
+        background-color: var(--bg);
+        border-color: var(--border);
+      }
+      
+      .bible-navigation {
+        background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg) 100%);
+        border-color: var(--border);
+      }
+      
+      select {
+        background-color: var(--bg-light);
+        color: var(--text);
+        border-color: var(--border);
+      }
+      
+      .translation-option label {
+        background-color: var(--bg-light);
+        color: var(--text);
+        border-color: var(--border);
+      }
+      
+      #verseContent {
+        background-color: var(--bg-light);
+        border-color: var(--border);
+      }
+      
+      .verse-num {
+        background-color: rgba(52, 152, 219, 0.1);
+      }
+      
+      .verse-row:nth-child(even) > div:not(.verse-num-cell) {
+        background-color: rgba(255, 255, 255, 0.03);
+      }
+    }
+  </style>
+</head>
+<body onload="initializeBibleSelector()">
+  <div class="main-container" id="bibleApp">
+    
+    <div class="header">
+      <h1><i class="fas fa-bible header-icon"></i>Библейский компаратор</h1>
+      <p class="header-subtitle">Инструмент для сравнительного анализа различных переводов Библии на русском и украинском языках</p>
+    </div>
+    
+    <div class="translations-container">
+      <div class="translations-title">
+        <i class="fas fa-language"></i> Выберите переводы для сравнения
+      </div>
+      <div id="translationCheckboxes" role="group" aria-labelledby="translationCheckboxes">
+        </div>
+    </div>
+    
+    <div class="bible-navigation">
+      <div class="navigation-title">
+        <i class="fas fa-book"></i> Навигация по Библии
+      </div>
+      <div class="select-group">
+        <div class="form-group">
+          <label for="bookSelect"><i class="fas fa-book-open"></i> Книга:</label>
+          <select id="bookSelect" aria-label="Выберите книгу Библии">
+            </select>
+        </div>
+        
+        <div class="form-group compact">
+          <label for="chapterSelect"><i class="fas fa-list-ol"></i> Глава:</label>
+          <select id="chapterSelect" aria-label="Выберите главу">
+            </select>
+        </div>
+        
+        <div class="nav-buttons">
+          <button class="btn btn-outline btn-nav" id="prevChapter" title="Предыдущая глава" aria-label="Перейти к предыдущей главе">
+            <i class="fas fa-chevron-left"></i> Назад
+          </button>
+          <button class="btn btn-primary btn-nav" id="nextChapter" title="Следующая глава" aria-label="Перейти к следующей главе">
+            Вперед <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <h3 id="modalTitle">Загрузка...</h3>
+    
+    <div id="verseContent" role="main" aria-live="polite">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        <p>Загрузка библейских текстов...</p>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <div class="footer-info">
+        <div class="footer-item">
+          <i class="fas fa-code"></i>
+          <span>Инструмент для изучения Библии</span>
+        </div>
+        <div class="footer-item">
+          <i class="fas fa-sync-alt"></i>
+          <span>Сравнение 5 переводов</span>
+        </div>
+        <div class="footer-item">
+          <i class="fas fa-mobile-alt"></i>
+          <span>Адаптивный дизайн</span>
+        </div>
+      </div>
+      <p class="copyright">© 2025 Библиотека библейских переводов | Церковь "Дом Евангелия" г. Сумы</p>
+    </div>
+  </div>
+
+ <script>
+    // --- КОНСТАНТЫ И ОСНОВНЫЕ ДАННЫЕ (Оставлены без изменений) ---
+    const STORAGE_KEY_TRANSLATIONS = 'bibleComparator_selectedTranslations';
+    const STORAGE_KEY_BOOK = 'bibleComparator_currentBook';
+    const STORAGE_KEY_CHAPTER = 'bibleComparator_currentChapter';
+    
+    let currentBookIndex = 0;
+    let currentChapter = 1;
+
+    // --- ЛОКАЛЬНОЕ ХРАНИЛИЩЕ ДАННЫХ ---
+    // Формат: {CODE: {BookName: {ChapterNum: {VerseNum: "Text"}}}}
+    const LOCAL_DATA = {}; 
+
+    // Список доступных переводов (изначально пустой, если не загружать встроенные файлы)
+    let AVAILABLE_TRANSLATIONS = [
+        { name: "Синодальный (SYNOD)", code: "SYNOD" },
+        { name: "Перевод Кулакова (KULAKOV)", code: "KULAKOV" },
+        { name: "Новый Русский (NRT)", code: "NRT" },
+        { name: "Украинская Библия (UBIO)", code: "UBIO" },
+        { name: "Перевод Кассиана (KASSIAN)", code: "KASSIAN" }
+    ]; // Перечень встроенных переводов, для которых ожидается загрузка файлов
+
+    const BIBLE_BOOKS = [
+        // ... (Ваш массив книг Библии)
+        // Использование данных из исходного файла:
+        { name: "Бытие", chapters: 50, abbr: "Быт" },
+        { name: "Исход", chapters: 40, abbr: "Исх" },
+        { name: "Левит", chapters: 27, abbr: "Лев" },
+        { name: "Числа", chapters: 36, abbr: "Чис" },
+        { name: "Второзаконие", chapters: 34, abbr: "Втор" },
+        { name: "Иисус Навин", chapters: 24, abbr: "Нав" },
+        { name: "Судей", chapters: 21, abbr: "Суд" },
+        { name: "Руфь", chapters: 4, abbr: "Руфь" },
+        { name: "1 Царств", chapters: 31, abbr: "1Цар" },
+        { name: "2 Царств", chapters: 24, abbr: "2Цар" },
+        { name: "3 Царств", chapters: 22, abbr: "3Цар" },
+        { name: "4 Царств", chapters: 25, abbr: "4Цар" },
+        { name: "1 Паралипоменон", chapters: 29, abbr: "1Пар" },
+        { name: "2 Паралипоменон", chapters: 36, abbr: "2Пар" },
+        { name: "Ездры", chapters: 10, abbr: "Ездр" },
+        { name: "Неемии", chapters: 13, abbr: "Неем" },
+        { name: "Есфирь", chapters: 10, abbr: "Есф" },
+        { name: "Иов", chapters: 42, abbr: "Иов" },
+        { name: "Псалтирь", chapters: 150, abbr: "Пс" },
+        { name: "Притчи", chapters: 31, abbr: "Притч" },
+        { name: "Екклесиаст", chapters: 12, abbr: "Еккл" },
+        { name: "Песнь Песней", chapters: 8, abbr: "Песн" },
+        { name: "Исаии", chapters: 66, abbr: "Ис" },
+        { name: "Иеремии", chapters: 52, abbr: "Иер" },
+        { name: "Плач Иеремии", chapters: 5, abbr: "Плач" },
+        { name: "Иезекииля", chapters: 48, abbr: "Иез" },
+        { name: "Даниила", chapters: 12, abbr: "Дан" },
+        { name: "Осии", chapters: 14, abbr: "Ос" },
+        { name: "Иоиля", chapters: 3, abbr: "Иоил" },
+        { name: "Амоса", chapters: 9, abbr: "Ам" },
+        { name: "Авдия", chapters: 1, abbr: "Авд" },
+        { name: "Ионы", chapters: 4, abbr: "Ион" },
+        { name: "Михея", chapters: 7, abbr: "Мих" },
+        { name: "Наума", chapters: 3, abbr: "Наум" },
+        { name: "Аввакума", chapters: 3, abbr: "Авв" },
+        { name: "Софонии", chapters: 3, abbr: "Соф" },
+        { name: "Аггея", chapters: 2, abbr: "Агг" },
+        { name: "Захарии", chapters: 14, abbr: "Зах" },
+        { name: "Малахии", chapters: 4, abbr: "Мал" },
+        { name: "От Матфея", chapters: 28, abbr: "Мф" },
+        { name: "От Марка", chapters: 16, abbr: "Мк" },
+        { name: "От Луки", chapters: 24, abbr: "Лк" },
+        { name: "От Иоанна", chapters: 21, abbr: "Ин" },
+        { name: "Деяния", chapters: 28, abbr: "Деян" },
+        { name: "К Римлянам", chapters: 16, abbr: "Рим" },
+        { name: "1 Коринфянам", chapters: 16, abbr: "1Кор" },
+        { name: "2 Коринфянам", chapters: 13, abbr: "2Кор" },
+        { name: "К Галатам", chapters: 6, abbr: "Гал" },
+        { name: "К Ефесянам", chapters: 6, abbr: "Еф" },
+        { name: "К Филиппийцам", chapters: 4, abbr: "Флп" },
+        { name: "К Колоссянам", chapters: 4, abbr: "Кол" },
+        { name: "1 Фессалоникийцам", chapters: 5, abbr: "1Фес" },
+        { name: "2 Фессалоникийцам", chapters: 3, abbr: "2Фес" },
+        { name: "1 Тимофею", chapters: 6, abbr: "1Тим" },
+        { name: "2 Тимофею", chapters: 4, abbr: "2Тим" },
+        { name: "К Титу", chapters: 3, abbr: "Тит" },
+        { name: "К Филимону", chapters: 1, abbr: "Флм" },
+        { name: "К Евреям", chapters: 13, abbr: "Евр" },
+        { name: "Иакова", chapters: 5, abbr: "Иак" },
+        { name: "1 Петра", chapters: 5, abbr: "1Пет" },
+        { name: "2 Петра", chapters: 3, abbr: "2Пет" },
+        { name: "1 Иоанна", chapters: 5, abbr: "1Ин" },
+        { name: "2 Иоанна", chapters: 1, abbr: "2Ин" },
+        { name: "3 Иоанна", chapters: 1, abbr: "3Ин" },
+        { name: "Иуды", chapters: 1, abbr: "Иуд" },
+        { name: "Откровение", chapters: 22, abbr: "Откр" }
+    ]; 
+    
+    // ... (остальные константы и DOM-элементы)
+    const modalTitle = document.getElementById('modalTitle'); 
+    const verseContent = document.getElementById('verseContent'); 
+    const bookSelect = document.getElementById('bookSelect'); 
+    const chapterSelect = document.getElementById('chapterSelect'); 
+    const translationCheckboxesContainer = document.getElementById('translationCheckboxes');
+
+    // --- ФУНКЦИИ ЗАГРУЗКИ ЛОКАЛЬНОГО ФАЙЛА ---
+
+    function getSelectedTranslations() {
+        const checkboxes = translationCheckboxesContainer.querySelectorAll('input[type="checkbox"]:checked');
+        return Array.from(checkboxes).map(cb => cb.value);
+    }
+
+    /**
+     * Добавляет данные перевода из загруженного файла в LOCAL_DATA.
+     * Ожидается JSON-формат, где ключ - это код перевода, а значение - данные перевода.
+     * Пример: {"MYTR": {"Бытие": {...}}}
+     */
+    function addTranslationToLocalData(data) {
+        const translationCode = Object.keys(data)[0];
+        if (!translationCode) {
+            alert("Ошибка: Неверный формат файла. Не найден код перевода.");
+            return;
+        }
+        
+        // Проверка, есть ли уже перевод с таким кодом
+        const existingTranslation = AVAILABLE_TRANSLATIONS.find(t => t.code === translationCode);
+        if (!existingTranslation) {
+            // Добавляем новый перевод
+            const newTranslationName = prompt(`Введите название для нового перевода с кодом "${translationCode}":`, translationCode);
+            if (newTranslationName) {
+                AVAILABLE_TRANSLATIONS.push({ name: newTranslationName, code: translationCode, custom: true });
+            } else {
+                return; // Пользователь отменил ввод
+            }
+        }
+        
+        // Добавляем/обновляем данные
+        Object.assign(LOCAL_DATA, data);
+        
+        // Перерисовываем чекбоксы и загружаем представление
+        initializeTranslationCheckboxes(); 
+        loadComparisonView();
+        alert(`Перевод "${AVAILABLE_TRANSLATIONS.find(t => t.code === translationCode)?.name || translationCode}" успешно загружен!`);
+    }
+
+    function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const content = e.target.result;
+                let data = JSON.parse(content);
+                addTranslationToLocalData(data);
+            } catch (error) {
+                console.error("Ошибка при обработке файла:", error);
+                alert("Ошибка при чтении или разборе файла. Убедитесь, что это корректный JSON-файл.");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    // --- ФУНКЦИИ ИНИЦИАЛИЗАЦИИ И НАВИГАЦИИ (МОДИФИЦИРОВАНЫ) ---
+
+    function initializeTranslationCheckboxes() {
+        const container = translationCheckboxesContainer;
+        container.innerHTML = '';
+        const fragment = document.createDocumentFragment();
+
+        // Загружаем сохраненные настройки
+        let savedTranslations = [];
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY_TRANSLATIONS);
+            if (saved) savedTranslations = JSON.parse(saved);
+        } catch (e) {
+            console.error("Error loading translations from localStorage", e);
+            savedTranslations = [];
+        }
+        const defaultTranslations = savedTranslations.length > 0 ? savedTranslations : ["SYNOD", "UBIO"];
+
+        // Используем динамический список AVAILABLE_TRANSLATIONS
+        AVAILABLE_TRANSLATIONS.forEach(t => {
+            // Если данных для этого перевода нет в LOCAL_DATA, его нельзя выбрать
+            const isDisabled = !LOCAL_DATA[t.code]; 
+            
+            const div = document.createElement('div');
+            div.className = 'translation-option';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = t.code;
+            checkbox.id = `cb-${t.code}`;
+            checkbox.setAttribute('role', 'switch');
+            
+            if (isDisabled) {
+                checkbox.disabled = true;
+                div.style.opacity = 0.5;
+                div.title = "Данные для этого перевода не загружены. Пожалуйста, загрузите файл.";
+            }
+
+            // Выбираем только если данные загружены И код есть в сохраненном/дефолтном списке
+            if (!isDisabled && defaultTranslations.includes(t.code)) { 
+                checkbox.checked = true;
+            }
+            
+            checkbox.addEventListener('change', loadComparisonView);
+            
+            const label = document.createElement('label');
+            label.setAttribute('for', `cb-${t.code}`);
+            label.textContent = t.name + (isDisabled ? ' (НЕТ ДАННЫХ)' : '');
+            
+            div.appendChild(checkbox);
+            div.appendChild(label);
+            fragment.appendChild(div);
+        });
+        container.appendChild(fragment);
+    }
+    
+    function getBookNumber(abbr) {
+        const map = { 'Быт':1, 'Исх':2, 'Лев':3, 'Чис':4, 'Втор':5, 'Нав':6, 'Суд':7, 'Руфь':8, '1Цар':9, '2Цар':10, '3Цар':11, '4Цар':12, '1Пар':13, '2Пар':14, 'Ездр':15, 'Неем':16, 'Есф':17, 'Иов':18, 'Пс':19, 'Притч':20, 'Еккл':21, 'Песн':22, 'Ис':23, 'Иер':24, 'Плач':25, 'Иез':26, 'Дан':27, 'Ос':28, 'Иоил':29, 'Ам':30, 'Авд':31, 'Ион':32, 'Мих':33, 'Наум':34, 'Авв':35, 'Соф':36, 'Агг':37, 'Зах':38, 'Мал':39, 'Мф':40, 'Мк':41, 'Лк':42, 'Ин':43, 'Деян':44, 'Рим':45, '1Кор':46, '2Кор':47, 'Гал':48, 'Еф':49, 'Флп':50, 'Кол':51, '1Фес':52, '2Фес':53, '1Тим':54, '2Тим':55, 'Тит':56, 'Флм':57, 'Евр':58, 'Иак':59, '1Пет':60, '2Пет':61, '1Ин':62, '2Ин':63, '3Ин':64, 'Иуд':65, 'Откр':66 }; 
+        return map[abbr]; // Не используется в новой логике, можно удалить, но оставлено для совместимости
+    }
+
+    async function loadComparisonView() {
+        const selectedTranslations = getSelectedTranslations();
+        const book = BIBLE_BOOKS[currentBookIndex];
+        const bookName = book.name;
+        const chapterNum = currentChapter.toString();
+
+        // Обновление глубокой ссылки и localStorage
+        const urlParams = new URLSearchParams();
+        urlParams.set('book', book.abbr);
+        urlParams.set('chapter', currentChapter);
+        urlParams.set('translations', selectedTranslations.join(','));
+        history.pushState({ book: book.abbr, chapter: currentChapter, translations: selectedTranslations }, '', `?${urlParams.toString()}`);
+        localStorage.setItem(STORAGE_KEY_BOOK, currentBookIndex);
+        localStorage.setItem(STORAGE_KEY_CHAPTER, currentChapter);
+
+        const titleTranslations = selectedTranslations
+            .map(code => AVAILABLE_TRANSLATIONS.find(t => t.code === code)?.name || code)
+            .join(' / ');
+        modalTitle.textContent = `${book.name}, глава ${currentChapter} | Сравнение: ${titleTranslations || 'Нет переводов'}`;
+
+        if (selectedTranslations.length === 0) {
+            verseContent.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-hand-pointer"></i>
+                    <p>Выберите хотя бы один перевод для сравнения выше.</p>
+                    <p>Или загрузите файл перевода, если нужного нет в списке.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Замена простой строки загрузки на компонент с анимацией
+        verseContent.innerHTML = `
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>Подготовка текста для сравнения...</p>
+            </div>
+        `;
+
+        // ---------------------------------------------
+        // Использование локально загруженных данных (вместо API)
+        // ---------------------------------------------
+        
+        const versesMap = new Map(); // Map<verseNum, Map<translationCode, verseData>>
+        let verseNumbers = new Set();
+        let dataFound = false;
+
+        selectedTranslations.forEach(code => {
+            const bookData = LOCAL_DATA[code]?.[bookName];
+            if (bookData && bookData[chapterNum]) {
+                dataFound = true;
+                const chapterData = bookData[chapterNum];
+                
+                Object.keys(chapterData).forEach(verseNum => {
+                    const text = chapterData[verseNum];
+                    
+                    verseNumbers.add(parseInt(verseNum));
+                    
+                    if (!versesMap.has(verseNum)) {
+                        versesMap.set(verseNum, new Map());
+                    }
+                    
+                    // Сохраняем данные в формате, удобном для рендеринга
+                    versesMap.get(verseNum).set(code, {
+                        verse: parseInt(verseNum),
+                        translation: code,
+                        text: text
+                    });
+                });
+            }
+        });
+        
+        if (!dataFound) {
+            verseContent.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Данные для выбранной книги/главы не найдены в LOCAL_DATA для выбранных переводов.</p>
+                    <p>Пожалуйста, загрузите соответствующие файлы перевода.</p>
+                </div>
+            `;
+            updateNavButtons();
+            return;
+        }
+
+        // Сортировка номеров стихов
+        const sortedVerseNumbers = Array.from(verseNumbers).sort((a, b) => a - b);
+        
+        // ---------------------------------------------
+        // Рендеринг сравнительной сетки (как в оригинале)
+        // ---------------------------------------------
+        const colCount = selectedTranslations.length;
+        let html = `<div id="comparisonGrid" role="table" aria-label="Сравнение переводов Библии" style="grid-template-columns: 80px repeat(${colCount}, 1fr);">`;
+
+        // Заголовки столбцов
+        html += '<div class="header-row" role="rowgroup">';
+        html += `<div class="header-cell verse-num" role="columnheader" aria-sort="none">Стих</div>`;
+        selectedTranslations.forEach(code => {
+            const name = AVAILABLE_TRANSLATIONS.find(t => t.code === code)?.name || code;
+            html += `<div class="header-cell translation-name" role="columnheader">${name.split(' (')[0]}</div>`;
+        });
+        html += '</div>';
+
+        // Строки стихов
+        sortedVerseNumbers.forEach(verseNum => {
+            const verseNumStr = verseNum.toString();
+            html += '<div class="verse-row" role="row">';
+            html += `<div class="verse-num-cell verse-num" role="rowheader">${verseNumStr}</div>`;
+            
+            selectedTranslations.forEach(code => {
+                const verseData = versesMap.get(verseNumStr)?.get(code);
+                const name = AVAILABLE_TRANSLATIONS.find(t => t.code === code)?.name || code;
+                let text = '<span style="color: var(--text-light); font-style: italic;">(Нет текста)</span>';
+
+                if (verseData && verseData.text) {
+                    text = DOMPurify.sanitize(verseData.text);
+                }
+
+                html += `<div class="verse-text-cell" role="cell" data-translation-name="${name.split(' (')[0]}">`;
+                html += `<span class="verse-text-number">${verseNumStr}</span>`; 
+                html += text;
+                html += `</div>`;
+            });
+            html += '</div>';
+        });
+
+        html += '</div>';
+        verseContent.innerHTML = html;
+        updateNavButtons();
+    }
+    
+    // ... (остальные вспомогательные функции: updateChapterSelector, goToPrevChapter, goToNextChapter)
+
+    function updateChapterSelector() { /* ... */ } // Оставить как есть
+
+    function goToPrevChapter() { /* ... */ } // Оставить как есть
+
+    function goToNextChapter() { /* ... */ } // Оставить как есть
+
+    // --- ФУНКЦИЯ ИНИЦИАЛИЗАЦИИ ---
+
+    document.addEventListener('DOMContentLoaded', initializeBibleSelector);
+    
+    function initializeBibleSelector() {
+        // --- 1. Восстановление состояния из URL или localStorage ---
+        // ... (логика восстановления состояния)
+        // Использование данных из исходного файла:
+        let initialBookIndex = parseInt(localStorage.getItem(STORAGE_KEY_BOOK)) || 0;
+        let initialChapter = parseInt(localStorage.getItem(STORAGE_KEY_CHAPTER)) || 1;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlBookAbbr = urlParams.get('book');
+        const urlChapter = parseInt(urlParams.get('chapter'));
+
+        if (urlBookAbbr) {
+            const bookIndexFromAbbr = BIBLE_BOOKS.findIndex(b => b.abbr === urlBookAbbr);
+            if (bookIndexFromAbbr !== -1) {
+                initialBookIndex = bookIndexFromAbbr;
+                if (urlChapter && urlChapter >= 1 && urlChapter <= BIBLE_BOOKS[initialBookIndex].chapters) {
+                    initialChapter = urlChapter;
+                } else {
+                    initialChapter = 1;
+                }
+            }
+        }
+        currentBookIndex = initialBookIndex;
+        currentChapter = initialChapter;
+        
+        // --- 2. Заполнение селектора книг ---
+        BIBLE_BOOKS.forEach((book, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = book.name;
+            bookSelect.appendChild(option);
+        });
+        bookSelect.value = currentBookIndex;
+
+        // --- 3. Инициализация флажков переводов ---
+        initializeTranslationCheckboxes(); 
+
+        // --- 4. Обработчик для загрузки файла ---
+        document.getElementById('translationFileInput').addEventListener('change', handleFileUpload);
+        
+        // --- 5. Обработчики событий ---
+        bookSelect.addEventListener('change', function() {
+            currentBookIndex = parseInt(this.value);
+            currentChapter = 1; 
+            updateChapterSelector();
+            loadComparisonView();
+        });
+        
+        chapterSelect.addEventListener('change', function() {
+            currentChapter = parseInt(this.value);
+            loadComparisonView();
+        });
+        
+        document.getElementById('prevChapter').addEventListener('click', goToPrevChapter);
+        document.getElementById('nextChapter').addEventListener('click', goToNextChapter);
+        
+        // Обработка кнопки "Назад/Вперед" в браузере
+        window.addEventListener('popstate', function(event) {
+            const state = event.state;
+            if (state) {
+                const bookIndexFromAbbr = BIBLE_BOOKS.findIndex(b => b.abbr === state.book);
+                if (bookIndexFromAbbr !== -1) {
+                    currentBookIndex = bookIndexFromAbbr;
+                    bookSelect.value = currentBookIndex;
+                }
+                currentChapter = state.chapter;
+                chapterSelect.value = currentChapter;
+                updateChapterSelector(); 
+                loadComparisonView(); 
+            }
+        });
+
+        // --- 6. Начальная загрузка ---
+        updateChapterSelector();
+        loadComparisonView();
+    }
+  </script>
+</body>
+</html>
+</body>
+</html>
