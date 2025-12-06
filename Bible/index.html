@@ -92,6 +92,7 @@
       line-height: 1.6;
     }
     
+    /* Заголовок с названием книги/главы */
     .header h3 {
       font-size: 18px;
       font-weight: 500;
@@ -254,12 +255,15 @@
         font-size: 14px;
     }
     
+    /* Стили для отключенных кнопок */
     .nav-btn:disabled {
-        opacity: 0.6;
+        opacity: 0.4;
         cursor: not-allowed;
         box-shadow: none;
+        background: #bdc3c7 !important; /* Серый цвет для отключенных */
     }
 
+    /* === НОВЫЕ СТИЛИ ДЛЯ ГОРИЗОНТАЛЬНОГО СРАВНЕНИЯ (ПК) === */
     #verseContent {
       max-height: calc(100vh - 300px); 
       overflow-y: auto;
@@ -268,74 +272,82 @@
       transition: background 0.3s;
     }
 
+    /* Контейнер для всех стихов (наследует старый .verses-container) */
     .verses-container {
-      display: flex;
-      flex-direction: column;
+      /* flex-direction: column; - удален, теперь управляется сеткой */
       gap: 28px;
+      padding-top: 20px; /* Отступ от заголовков переводов */
     }
 
-    .verse-block {
-      background: var(--bg-card);
-      border-radius: 20px;
-      padding: 24px;
-      border-left: 6px solid var(--primary);
-      box-shadow: var(--shadow);
-      transition: background 0.3s, box-shadow 0.3s;
-    }
-
-    .verse-number-label {
-      display: inline-flex;
-      align-items: center;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      color: white;
-      padding: 10px 22px;
-      border-radius: 30px;
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 20px;
-      box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
-    }
-
-    .translation-content {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .translation-item {
-      padding: 20px;
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-      border: 1px solid rgba(0,0,0,0.04);
-      transition: background 0.3s, border-color 0.3s;
-    }
-
-    .translation-name {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--secondary);
-      margin-bottom: 14px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid #f1f3f5;
-      display: flex;
-      align-items: center;
-      transition: color 0.3s, border-bottom-color 0.3s;
+    /* Общий контейнер для всех переводов одного стиха */
+    .verse-group-wrapper {
+        display: grid;
+        /* grid-template-columns будет задаваться в JS в зависимости от количества переводов */
+        gap: 20px; /* Промежуток между переводами */
+        padding: 15px 0 30px 0; 
+        border-bottom: 2px solid var(--border);
+        position: relative;
     }
     
-    .translation-name i {
+    /* Карточка перевода */
+    .translation-card {
+        padding: 16px;
+        background: var(--bg-card);
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.04);
+        transition: background 0.3s, border-color 0.3s;
+    }
+
+    /* Заголовок перевода (STICY) */
+    .translation-header {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--secondary);
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 10px 0;
+        border-bottom: 2px solid #f1f3f5;
+        /* Свойство для "прилипания" */
+        position: sticky;
+        top: 90px; /* Должно быть ниже sticky .controls (top: 0) */
+        z-index: 10;
+        background: var(--bg-card); /* Фон, чтобы скрыть текст под ним */
+        display: flex;
+        align-items: center;
+        transition: color 0.3s, border-bottom-color 0.3s;
+    }
+
+    .translation-header i {
         margin-right: 8px;
         color: var(--primary);
     }
+    
+    /* Номер стиха */
+    .verse-num {
+        display: inline-block;
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--accent);
+        margin-right: 12px;
+        line-height: 1.5;
+        flex-shrink: 0;
+    }
 
-    .translation-text {
-      font-size: 17px;
-      line-height: 1.8;
-      color: var(--text);
-      font-weight: 400;
-      transition: color 0.3s;
+    .verse-text {
+        font-size: 17px;
+        line-height: 1.7;
+        color: var(--text);
+        font-weight: 400;
+        transition: color 0.3s;
+        /* Убираем отступ для текста, номер стиха будет внутри */
+    }
+    
+    /* Убираем старые, неиспользуемые классы для нового дизайна */
+    .verse-block, .verse-number-label, .translation-content, .translation-item {
+      /* Эти классы больше не используются в новом JS-коде, но оставляем на всякий случай */
+      display: none !important;
     }
     
     .message-text {
@@ -348,42 +360,11 @@
       margin: 0 auto;
     }
     
-    .error-message {
-      text-align: center;
-      color: #e74c3c;
-      padding: 30px;
-      background: #fee;
-      border-radius: 12px;
-      margin: 20px;
-      border: 1px solid #fcc;
-    }
-    
-    .error-message button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .footer {
-      padding: 24px;
-      text-align: center;
-      background: linear-gradient(to bottom, #f8f9fa 0%, #f1f3f5 100%);
-      border-top: 1px solid #e9ecef;
-      color: var(--text-light);
-      font-size: 14px;
-      transition: background 0.3s, border-top-color 0.3s;
-    }
-    
-    
-    /* === НОЧНОЙ РЕЖИМ ДЛЯ МОБИЛЬНЫХ (Максимальная ширина 768px) === */
+    /* === НОЧНОЙ РЕЖИМ (МОБИЛЬНАЯ АДАПТАЦИЯ) === */
     @media (max-width: 768px) {
+      /* ... (оставляем ваши мобильные стили без изменений) ... */
       body { 
         padding: 8px;
-        /* Темный фон для мобильных */
         background: var(--dark-bg);
         color: var(--dark-text);
       }
@@ -391,11 +372,7 @@
       .main-container {
         border-radius: 12px;
         background: var(--dark-card);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Более заметная тень */
-      }
-      
-      .header {
-        padding: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
       }
       
       .translations-options-section,
@@ -454,36 +431,47 @@
         background: var(--dark-card);
       }
       
-      .verse-block {
-        padding: 16px;
-        border-radius: 16px;
+      /* МОБИЛЬНЫЙ ВИД: Вертикальное отображение стихов */
+      .verses-container {
+          display: block;
+          padding-top: 0;
+      }
+      
+      .verse-group-wrapper {
+        display: flex; 
+        flex-direction: column;
+        gap: 12px;
+        padding: 0;
+        border-bottom: none;
+        margin-bottom: 25px;
+      }
+      
+      .translation-card {
+        padding: 14px;
         background: var(--dark-bg);
-        border-left: 6px solid var(--primary);
+        border-radius: 10px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
       }
       
-      .translation-content {
-        gap: 12px;
-      }
-      
-      .translation-item {
-        padding: 14px;
-        border-radius: 12px;
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      
-      .translation-name {
+      .translation-header {
+        position: static; /* Отключаем sticky на мобильных */
+        background: var(--dark-bg);
         color: var(--primary); 
         border-bottom: 2px solid rgba(255, 255, 255, 0.1);
       }
       
-      .translation-name i {
+      .translation-header i {
           color: var(--primary);
+      }
+      
+      .verse-num {
+          font-size: 15px;
+          color: var(--accent);
       }
       
       .translation-text {
         color: var(--dark-text);
+        font-size: 16px;
       }
       
       .message-text {
@@ -504,7 +492,7 @@
     }
   </style>
 </head>
-<body onload="initializeBibleSelector()">
+<body>
   <div class="main-container" id="bibleApp">
     
     <div class="header">
@@ -553,15 +541,13 @@
 <script>
     // --- ПЕРЕМЕННЫЕ И НАСТРОЙКИ ---
     
-// ИСПРАВЛЕННЫЙ КОД (СООТВЕТСТВУЕТ ВАШЕМУ HTML):
-    // bookSelect, chapterSelect, translationCheckboxes, prevChapter, nextChapter
-    // headerTitle = modalTitle, resultsContainer = verseContent
+    // Глобальные переменные UI и состояния (ИСПРАВЛЕНО: ID в стиле camelCase)
     const bookSelect = document.getElementById('bookSelect');
     const chapterSelect = document.getElementById('chapterSelect');
     const prevChapterBtn = document.getElementById('prevChapter');
     const nextChapterBtn = document.getElementById('nextChapter');
     const resultsContainer = document.getElementById('verseContent'); // Контейнер вывода
-    const headerTitle = document.getElementById('modalTitle'); // Заголовок вверху
+    const headerTitle = document.getElementById('modalTitle'); // Заголовок
     const translationCheckboxes = document.getElementById('translationCheckboxes');
     
     let currentBookIndex = 0;
@@ -569,10 +555,8 @@
 
     // --- ЛОКАЛЬНАЯ КОНФИГУРАЦИЯ ДАННЫХ ---
     
-    // Объект для хранения всех загруженных JSON-данных
     const LOCAL_DATA = {}; 
     
-    // Карта кодов переводов и имен файлов, полученных после разделения
     const TRANSLATION_FILES = {
         "SYNOD": "SYNOD_Синодальный.json",
         "NRT": "NRT_Новый.json",
@@ -581,7 +565,6 @@
         "UTT": "UTT_Турконяк.json"
     };
 
-    // Карта для отображения полных названий в интерфейсе
     const TRANSLATION_NAMES = {
         "SYNOD": "Синодальный (Рус.)", 
         "NRT": "Новый Русский (Рус.)", 
@@ -590,7 +573,6 @@
         "UTT": "Турконяк (Укр.)"
     };
 
-    // Список книг (должен соответствовать вашему исходному списку)
     const BIBLE_BOOKS = [
         { name: "Бытие", chapters: 50, abbr: "Быт" }, { name: "Исход", chapters: 40, abbr: "Исх" },
         { name: "Левит", chapters: 27, abbr: "Лев" }, { name: "Числа", chapters: 36, abbr: "Чис" },
@@ -629,21 +611,36 @@
     
     // --- ОСНОВНЫЕ ФУНКЦИИ ---
 
+    // Функция, обновляющая статус кнопок навигации
+    function updateNavButtons() {
+        const isFirstChapter = currentBookIndex === 0 && currentChapter === 1;
+        const isLastBook = currentBookIndex === BIBLE_BOOKS.length - 1;
+        const isLastChapter = currentChapter === BIBLE_BOOKS[currentBookIndex].chapters;
+        
+        prevChapterBtn.disabled = isFirstChapter;
+        nextChapterBtn.disabled = isLastBook && isLastChapter;
+    }
+
     // НОВАЯ ФУНКЦИЯ: Загружает все 5 локальных JSON-файлов
     async function loadAllLocalData() {
-        resultsContainer.innerHTML = '<div style="text-align: center; color: var(--primary); font-size: 1.2em;">⏳ Загрузка всех 5 переводов... Это может занять несколько секунд.</div>';
+        resultsContainer.innerHTML = '<div class="message-text" style="color: var(--primary); font-size: 1.2em;">⏳ Загрузка всех 5 переводов... Это может занять несколько секунд.</div>';
         
         const promises = Object.entries(TRANSLATION_FILES).map(async ([code, filename]) => {
             try {
-                // Предполагаем, что файлы лежат рядом с HTML
                 const response = await fetch(filename); 
                 if (!response.ok) {
-                    throw new Error(`Ошибка загрузки: ${response.status}`);
+                    // Явное уведомление пользователя, если файл не найден (CORS/404)
+                    throw new Error(`Ошибка загрузки. Код: ${response.status}. Проверьте, загружены ли все 5 JSON-файлов на GitHub.`);
                 }
                 const data = await response.json();
                 LOCAL_DATA[code] = data;
                 console.log(`✅ Загружен файл: ${filename}`);
             } catch (error) {
+                // Выводим информативную ошибку
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.innerHTML = `❌ Не удалось загрузить данные для перевода ${TRANSLATION_NAMES[code]} (${code}).<br>Причина: ${error.message}`;
+                resultsContainer.appendChild(errorDiv);
                 console.error(`❌ Ошибка загрузки локального файла ${filename}:`, error);
             }
         });
@@ -653,13 +650,15 @@
         console.log("Все локальные данные загружены.");
     }
 
-    // (Оставлена, как в вашем коде)
+    // (Обновлено: Добавлена логика для класса 'active' на контейнере)
     function initializeTranslationCheckboxes() {
         translationCheckboxes.innerHTML = '';
         Object.entries(TRANSLATION_NAMES).forEach(([code, name]) => {
-            const label = document.createElement('label');
-            label.className = 'checkbox-label';
             
+            const container = document.createElement('div');
+            container.className = 'translation-checkbox-container';
+            container.setAttribute('data-code', code); // Для удобного доступа
+
             const input = document.createElement('input');
             input.type = 'checkbox';
             input.name = 'translation';
@@ -668,23 +667,33 @@
             // SYNOD и NRT по умолчанию активны
             if (code === 'SYNOD' || code === 'NRT') {
                 input.checked = true;
+                container.classList.add('active'); // Активируем контейнер
             }
 
-            input.addEventListener('change', loadComparisonView);
-
-            label.appendChild(input);
-            label.appendChild(document.createTextNode(name));
-            translationCheckboxes.appendChild(label);
+            // Обработчик события для обновления вида и данных
+            input.addEventListener('change', function() {
+                if (this.checked) {
+                    container.classList.add('active');
+                } else {
+                    container.classList.remove('active');
+                }
+                loadComparisonView();
+            });
+            
+            const label = document.createElement('label');
+            label.textContent = name;
+            
+            container.appendChild(input);
+            container.appendChild(label);
+            translationCheckboxes.appendChild(container);
         });
     }
 
-    // (Оставлена, как в вашем коде)
     function getSelectedTranslations() {
         const checkboxes = document.querySelectorAll('input[name="translation"]:checked');
         return Array.from(checkboxes).map(cb => cb.value);
     }
     
-    // (Оставлена, как в вашем коде)
     function updateChapterSelector() {
         chapterSelect.innerHTML = '';
         const maxChapters = BIBLE_BOOKS[currentBookIndex].chapters;
@@ -695,20 +704,17 @@
             chapterSelect.appendChild(option);
         }
         
-        // Убеждаемся, что текущая глава не превышает максимум
         if (currentChapter > maxChapters) {
             currentChapter = maxChapters;
         }
         chapterSelect.value = currentChapter;
     }
 
-    // (Оставлена, как в вашем коде)
     function updateHeader() {
         const bookName = BIBLE_BOOKS[currentBookIndex].name;
         headerTitle.textContent = `${bookName}, Глава ${currentChapter}`;
     }
 
-    // (Оставлена, как в вашем коде)
     function goToPrevChapter() {
         if (currentChapter > 1) {
             currentChapter--;
@@ -724,7 +730,6 @@
         localStorage.setItem('bibleApp_chapter', currentChapter);
     }
     
-    // (Оставлена, как в вашем коде)
     function goToNextChapter() {
         const maxChapters = BIBLE_BOOKS[currentBookIndex].chapters;
         const maxBooks = BIBLE_BOOKS.length - 1;
@@ -743,11 +748,10 @@
         localStorage.setItem('bibleApp_chapter', currentChapter);
     }
 
-    // НОВАЯ ЛОГИКА: Извлекает данные из локального объекта LOCAL_DATA
+    // НОВАЯ ЛОГИКА: С генерацией горизонтальной сетки и DocumentFragment
     function loadComparisonView() {
-        // Проверяем, завершилась ли загрузка
         if (Object.keys(LOCAL_DATA).length === 0) {
-            resultsContainer.innerHTML = '<div style="text-align: center; color: var(--accent);">Ожидание завершения загрузки данных.</div>';
+            resultsContainer.innerHTML = '<div class="message-text" style="color: var(--accent);">Ожидание завершения загрузки данных.</div>';
             return;
         }
         
@@ -755,62 +759,111 @@
         const currentChapterNum = currentChapter.toString();
         const selectedTranslations = getSelectedTranslations();
         
-        resultsContainer.innerHTML = ''; // Очистка
+        // КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: DocumentFragment для ускорения отрисовки
+        const fragment = document.createDocumentFragment();
         
-        // 1. Ищем максимальный номер стиха в текущей главе среди всех активных переводов
+        // 1. Устанавливаем количество колонок для CSS Grid
+        const colCount = selectedTranslations.length || 1;
+        // Только если ширина экрана позволяет (для десктопов), устанавливаем grid
+        if (window.innerWidth > 768) { 
+            resultsContainer.style.setProperty('--col-count', colCount);
+            resultsContainer.style.display = 'block'; // Убеждаемся, что не скрыт
+        } else {
+            resultsContainer.style.setProperty('--col-count', 1);
+        }
+        
+        // 2. Генерация заголовков переводов (за пределами стихов)
+        const headerRow = document.createElement('div');
+        headerRow.className = 'verse-group-wrapper translation-headers';
+        // Устанавливаем колонки для заголовков
+        headerRow.style.gridTemplateColumns = `repeat(${colCount}, 1fr)`;
+        
+        selectedTranslations.forEach(code => {
+            const header = document.createElement('div');
+            header.className = 'translation-header';
+            header.innerHTML = `<i class="fas fa-arrow-circle-right"></i> ${TRANSLATION_NAMES[code]}`;
+            headerRow.appendChild(header);
+        });
+        
+        // 3. Ищем максимальный номер стиха
         let maxVerses = 0;
         selectedTranslations.forEach(code => {
             const chapterData = LOCAL_DATA[code]?.[currentBookName]?.[currentChapterNum];
             if (chapterData) {
-                // Находим максимальный ключ-номер стиха
                 maxVerses = Math.max(maxVerses, ...Object.keys(chapterData).map(Number));
             }
         });
 
-        // Если данных нет (например, конец книги или ошибка)
         if (maxVerses === 0) {
-            resultsContainer.innerHTML = '<div style="text-align: center; color: var(--accent);">Данные для выбранной главы не найдены или не загружены.</div>';
+            resultsContainer.innerHTML = '<div class="message-text" style="color: var(--accent);">Данные для выбранной главы не найдены или не загружены.</div>';
             return;
         }
 
-        // 2. Генерация HTML
+        // 4. Генерация стихов
         for (let i = 1; i <= maxVerses; i++) {
             const verseNum = i.toString();
-            const row = document.createElement('div');
-            row.className = 'comparison-row';
             
+            // Главный контейнер для всех переводов одного стиха
+            const verseWrapper = document.createElement('div');
+            verseWrapper.className = 'verse-group-wrapper';
+            verseWrapper.style.gridTemplateColumns = `repeat(${colCount}, 1fr)`;
+
             selectedTranslations.forEach(code => {
-                // Прямое извлечение текста из локального объекта
                 const verseText = LOCAL_DATA[code]?.[currentBookName]?.[currentChapterNum]?.[verseNum] || '';
+                
                 const card = document.createElement('div');
                 card.className = 'translation-card';
                 
-                // Используем DOMPurify для безопасной вставки текста
                 const cleanText = DOMPurify.sanitize(verseText);
                 
                 card.innerHTML = `
-                    <div class="translation-header">${TRANSLATION_NAMES[code]}</div>
-                    <div class="verse-num">${verseNum}</div>
-                    <div class="verse-text">${cleanText}</div>
+                    <div class="verse-text">
+                        <span class="verse-num">${verseNum}</span> ${cleanText}
+                    </div>
                 `;
-                row.appendChild(card);
+                verseWrapper.appendChild(card);
             });
-            resultsContainer.appendChild(row);
+            fragment.appendChild(verseWrapper);
         }
-
+        
+        // Очистка и вставка за один раз (оптимизация)
+        resultsContainer.innerHTML = '';
+        
+        // Вставляем заголовки только на десктопе, где они нужны для sticky
+        if (window.innerWidth > 768) {
+             // Создаем контейнер для стихов, чтобы избежать конфликта с sticky заголовками
+            const versesContainer = document.createElement('div');
+            versesContainer.className = 'verses-container'; 
+            
+            // Сначала вставляем заголовки
+            resultsContainer.appendChild(headerRow);
+            
+            // Затем вставляем сам фрагмент стихов
+            versesContainer.appendChild(fragment);
+            resultsContainer.appendChild(versesContainer);
+            
+        } else {
+             // На мобильных вставляем только стихи (фрагмент)
+             resultsContainer.appendChild(fragment);
+        }
+        
         updateHeader();
+        updateNavButtons(); // Обновление кнопок
         localStorage.setItem('bibleApp_bookIndex', currentBookIndex);
         localStorage.setItem('bibleApp_chapter', currentChapter);
     }
     
     // ОБНОВЛЕННАЯ ФУНКЦИЯ ИНИЦИАЛИЗАЦИИ
     async function initializeBibleSelector() {
+        // УДАЛЕНО: атрибут onload="initializeBibleSelector()" в <body>
+        
         // Сначала загружаем данные
         await loadAllLocalData(); 
         
         currentBookIndex = parseInt(localStorage.getItem('bibleApp_bookIndex')) || 0;
         currentChapter = parseInt(localStorage.getItem('bibleApp_chapter')) || 1;
 
+        // Инициализация селектора книг
         BIBLE_BOOKS.forEach((book, index) => {
             const option = document.createElement('option');
             option.value = index;
