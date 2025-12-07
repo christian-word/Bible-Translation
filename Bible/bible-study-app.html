@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Изучение Библии с ИИ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; }
+        .verse-highlight { background-color: #fef3c7; }
+        .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: #f1f1f1; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #888; border-radius: 3px; }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="app" class="flex flex-col h-screen">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+                <h1 class="text-xl font-bold text-gray-900">Изучение Писания</h1>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="menuBtn" class="md:hidden p-2 hover:bg-gray-100 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <button id="aiToggle" class="p-2 rounded-lg hover:bg-gray-100">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            <aside id="sidebar" class="hidden md:flex md:w-80 border-r border-gray-200 flex-col bg-white">
+                <div class="p-4 border-b border-gray-200">
+                    <!-- Search -->
+                    <div class="mb-4 relative">
+                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input id="searchInput" type="text" placeholder="Поиск по тексту..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- Translations -->
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 block mb-2">Переводы:</label>
+                        <div id="translationsList" class="space-y-1"></div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex-1 overflow-y-auto scrollbar-thin p-4">
+                    <div id="searchResults" class="hidden space-y-2 mb-4"></div>
+                    <div id="navigation">
+                        <div class="mb-4">
+                            <label class="text-sm font-medium text-gray-700 mb-2 block">Книга:</label>
+                            <select id="bookSelect" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></select>
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700 mb-2 block">Глава:</label>
+                            <div id="chapterGrid" class="grid grid-cols-5 gap-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 overflow-y-auto scrollbar-thin p-6">
+                <div class="max-w-4xl mx-auto">
+                    <h2 id="chapterTitle" class="text-2xl font-bold text-gray-900 mb-6"></h2>
+                    <div id="versesContainer" class="space-y-6"></div>
+                </div>
+            </main>
+
+            <!-- AI Panel -->
+            <aside id="aiPanel" class="hidden md:w-96 border-l border-gray-200 flex-col bg-white">
+                <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+                    <h3 class="font-semibold text-gray-900">ИИ-помощник</h3>
+                    <button id="aiClose" class="md:hidden p-2 hover:bg-gray-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="aiMessages" class="flex-1 overflow-y-auto scrollbar-thin p-4 space-y-4">
+                    <div class="text-center text-gray-500 mt-8">
+                        <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                        <p class="text-sm">Задайте вопрос о тексте</p>
+                        <p class="text-xs mt-2">Например: "Сравни переводы этого стиха"</p>
+                    </div>
+                </div>
+                <div class="p-4 border-t border-gray-200">
+                    <div class="flex gap-2">
+                        <input id="aiInput" type="text" placeholder="Задайте вопрос..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <button id="aiSend" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">→</button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        const TRANSLATIONS = {
+            'HOM_Хоменко': 'Хоменко',
+            'UBIO_Огієнко': 'Огієнко',
+            'UTT_Турконяк': 'Турконяк',
+            'NRT_Новый': 'Новый русский',
+            'SYNOD_Синодальный': 'Синодальный'
+        };
+
+        const state = {
+            bibleData: {},
+            translations: [],
+            activeTranslations: [],
+            selectedBook: '',
+            selectedChapter: '',
+            searchQuery: '',
+            aiMessages: [],
+            isLoading: false
+        };
+
+        // Load Bible files
+        async function loadBibleFile(filename) {
+            try {
+                const response = await window.fs.readFile(filename, { encoding: 'utf8' });
+                return JSON.parse(response);
+            } catch (error) {
+                console.error(`Error loading ${filename}:`, error);
+                return null;
+            }
+        }
+
+        async function initApp() {
+            const files = [
+                'HOM_Хоменко.json',
+                'UBIO_Огієнко.json',
+                'UTT_Турконяк.json',
+                'NRT_Новый.json',
+                'SYNOD_Синодальный.json'
+            ];
+
+            for (const file of files) {
+                const data = await loadBibleFile(file);
+                if (data) {
+                    const key = file.replace('.json', '');
+                    state.bibleData[key] = data;
+                    state.translations.push(key);
+                }
+            }
+
+            if (state.translations.length > 0) {
+                state.activeTranslations = [state.translations[0]];
+                const firstBook = Object.keys(state.bibleData[state.translations[0]])[0];
+                state.selectedBook = firstBook;
+                state.selectedChapter = '1';
+                
+                renderTranslations();
+                renderBooks();
+                renderChapters();
+                renderVerses();
+            }
+        }
+
+        function renderTranslations() {
+            const list = document.getElementById('translationsList');
+            list.innerHTML = state.translations.map(trans => `
+                <label class="flex items-center gap-2 text-sm cursor-pointer">
+                    <input type="checkbox" ${state.activeTranslations.includes(trans) ? 'checked' : ''} 
+                           onchange="toggleTranslation('${trans}')" class="rounded text-blue-600">
+                    <span>${TRANSLATIONS[trans]}</span>
+                </label>
+            `).join('');
+        }
+
+        function toggleTranslation(trans) {
+            if (state.activeTranslations.includes(trans)) {
+                if (state.activeTranslations.length > 1) {
+                    state.activeTranslations = state.activeTranslations.filter(t => t !== trans);
+                }
+            } else {
+                state.activeTranslations.push(trans);
+            }
+            renderVerses();
+        }
+
+        function renderBooks() {
+            const select = document.getElementById('bookSelect');
+            const books = Object.keys(state.bibleData[state.translations[0]]);
+            select.innerHTML = books.map(book => 
+                `<option value="${book}" ${book === state.selectedBook ? 'selected' : ''}>${book}</option>`
+            ).join('');
+            select.onchange = (e) => {
+                state.selectedBook = e.target.value;
+                state.selectedChapter = '1';
+                renderChapters();
+                renderVerses();
+            };
+        }
+
+        function renderChapters() {
+            const grid = document.getElementById('chapterGrid');
+            const chapters = Object.keys(state.bibleData[state.translations[0]][state.selectedBook]);
+            grid.innerHTML = chapters.map(ch => `
+                <button onclick="selectChapter('${ch}')" 
+                        class="p-2 rounded text-sm ${ch === state.selectedChapter ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}">
+                    ${ch}
+                </button>
+            `).join('');
+        }
+
+        function selectChapter(chapter) {
+            state.selectedChapter = chapter;
+            renderChapters();
+            renderVerses();
+        }
+
+        function renderVerses() {
+            const container = document.getElementById('versesContainer');
+            const title = document.getElementById('chapterTitle');
+            title.textContent = `${state.selectedBook} ${state.selectedChapter}`;
+
+            const verses = {};
+            state.activeTranslations.forEach(trans => {
+                const chapter = state.bibleData[trans]?.[state.selectedBook]?.[state.selectedChapter];
+                if (chapter) {
+                    Object.keys(chapter).forEach(verseNum => {
+                        if (!verses[verseNum]) verses[verseNum] = {};
+                        verses[verseNum][trans] = chapter[verseNum];
+                    });
+                }
+            });
+
+            container.innerHTML = Object.keys(verses).map(verseNum => `
+                <div id="verse-${verseNum}" class="bg-white rounded-lg p-4 shadow-sm">
+                    <div class="flex items-start gap-3">
+                        <span class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full text-sm font-semibold">
+                            ${verseNum}
+                        </span>
+                        <div class="flex-1 space-y-3">
+                            ${state.activeTranslations.map(trans => `
+                                <div>
+                                    <div class="text-xs text-gray-500 mb-1">${TRANSLATIONS[trans]}</div>
+                                    <p class="text-gray-800 leading-relaxed">${verses[verseNum][trans]}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button onclick="copyVerse(${verseNum})" class="flex-shrink-0 p-2 hover:bg-gray-100 rounded-lg" title="Копировать">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function copyVerse(verseNum) {
+            const verses = {};
+            state.activeTranslations.forEach(trans => {
+                const text = state.bibleData[trans]?.[state.selectedBook]?.[state.selectedChapter]?.[verseNum];
+                if (text) verses[trans] = text;
+            });
+            
+            const text = Object.keys(verses).map(trans => 
+                `${TRANSLATIONS[trans]}: ${verses[trans]}`
+            ).join('\n');
+            
+            navigator.clipboard.writeText(`${state.selectedBook} ${state.selectedChapter}:${verseNum}\n${text}`);
+        }
+
+        // Search
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (!query) {
+                document.getElementById('searchResults').classList.add('hidden');
+                document.getElementById('navigation').classList.remove('hidden');
+                return;
+            }
+
+            const results = [];
+            state.activeTranslations.forEach(trans => {
+                Object.keys(state.bibleData[trans]).forEach(book => {
+                    Object.keys(state.bibleData[trans][book]).forEach(chapter => {
+                        Object.keys(state.bibleData[trans][book][chapter]).forEach(verse => {
+                            const text = state.bibleData[trans][book][chapter][verse];
+                            if (text.toLowerCase().includes(query)) {
+                                results.push({ trans, book, chapter, verse, text });
+                            }
+                        });
+                    });
+                });
+            });
+
+            const container = document.getElementById('searchResults');
+            if (results.length > 0) {
+                container.classList.remove('hidden');
+                document.getElementById('navigation').classList.add('hidden');
+                container.innerHTML = `
+                    <h3 class="font-semibold text-gray-900 mb-3">Результаты (${results.length})</h3>
+                    ${results.slice(0, 50).map(r => `
+                        <button onclick="navigateTo('${r.book}', '${r.chapter}', '${r.verse}')" 
+                                class="w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg">
+                            <div class="text-xs font-medium text-blue-600 mb-1">
+                                ${r.book} ${r.chapter}:${r.verse}
+                            </div>
+                            <div class="text-sm text-gray-700 line-clamp-2">${r.text}</div>
+                        </button>
+                    `).join('')}
+                `;
+            }
+        }
+
+        function navigateTo(book, chapter, verse) {
+            state.selectedBook = book;
+            state.selectedChapter = chapter;
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').classList.add('hidden');
+            document.getElementById('navigation').classList.remove('hidden');
+            renderBooks();
+            renderChapters();
+            renderVerses();
+            setTimeout(() => {
+                document.getElementById(`verse-${verse}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+
+        // AI Functions
+        document.getElementById('aiToggle').addEventListener('click', () => {
+            const panel = document.getElementById('aiPanel');
+            panel.classList.toggle('hidden');
+            panel.classList.toggle('flex');
+        });
+
+        document.getElementById('aiInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendToAI();
+        });
+
+        document.getElementById('aiSend').addEventListener('click', sendToAI);
+
+        async function sendToAI() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message || state.isLoading) return;
+
+            state.isLoading = true;
+            input.value = '';
+
+            // Add user message
+            state.aiMessages.push({ role: 'user', content: message });
+            renderAiMessages();
+
+            // Get context
+            const context = getContext();
+            const systemPrompt = `Ты помощник для изучения Библии. Твоя задача - помогать понять текст, но НЕ давать окончательные толкования.
+
+Доступные переводы: ${state.activeTranslations.map(t => TRANSLATIONS[t]).join(', ')}
+
+Текущий контекст изучения:
+${context}
+
+Правила:
+- Будь кратким и по делу
+- Сравнивай переводы, если это полезно
+- Объясняй контекст (исторический, культурный)
+- Задавай вопросы для размышления
+- Не навязывай доктрину
+- Направляй к тексту, а не от него
+- Отвечай на русском или украинском (зависит от языка вопроса)`;
+
+            try {
+                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${atob("Z3NrX1NUelQyS1FFQko3MGNDb1hDSllaV0dkeWIzRlk5OHJHN2xvWXUxSmc1SnV0VFZOSzIyVHY=")}`
+                    },
+                    body: JSON.stringify({
+                        model: "meta-llama/llama-3.3-70b-versatile",
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            ...state.aiMessages.slice(-10).map(msg => ({ role: msg.role, content: msg.content }))
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 1500
+                    })
+                });
+
+                const data = await response.json();
+                const aiResponse = data.choices?.[0]?.message?.content || "Извините, произошла ошибка.";
+                
+                state.aiMessages.push({ role: 'assistant', content: aiResponse });
+                renderAiMessages();
+            } catch (error) {
+                console.error("AI Error:", error);
+                state.aiMessages.push({ role: 'assistant', content: "Извините, произошла ошибка при обращении к ИИ." });
+                renderAiMessages();
+            } finally {
+                state.isLoading = false;
+            }
+        }
+
+        function getContext() {
+            let context = `Книга: ${state.selectedBook}, Глава: ${state.selectedChapter}\n\n`;
+            
+            state.activeTranslations.forEach(trans => {
+                context += `\n=== ${TRANSLATIONS[trans]} ===\n`;
+                const chapter = state.bibleData[trans]?.[state.selectedBook]?.[state.selectedChapter];
+                if (chapter) {
+                    Object.keys(chapter).forEach(v => {
+                        context += `${v}. ${chapter[v]}\n`;
+                    });
+                }
+            });
+            
+            return context;
+        }
+
+        function renderAiMessages() {
+            const container = document.getElementById('aiMessages');
+            if (state.aiMessages.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 mt-8">
+                        <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                        <p class="text-sm">Задайте вопрос о тексте</p>
+                        <p class="text-xs mt-2">Например: "Сравни переводы этого стиха"</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = state.aiMessages.map(msg => `
+                    <div class="${msg.role === 'user' ? 'text-right' : 'text-left'}">
+                        <div class="inline-block max-w-[85%] p-3 rounded-lg ${
+                            msg.role === 'user' 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-gray-100 text-gray-800'
+                        }">
+                            <p class="text-sm whitespace-pre-wrap">${msg.content}</p>
+                        </div>
+                    </div>
+                `).join('');
+                
+                if (state.isLoading) {
+                    container.innerHTML += `
+                        <div class="flex items-center gap-2 text-gray-500">
+                            <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span class="text-sm">Думаю...</span>
+                        </div>
+                    `;
+                }
+            }
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Mobile menu
+        document.getElementById('menuBtn').addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('flex');
+            sidebar.classList.toggle('absolute');
+            sidebar.classList.toggle('inset-0');
+            sidebar.classList.toggle('z-10');
+        });
+
+        // Initialize
+        initApp();
+    </script>
+</body>
+</html>
