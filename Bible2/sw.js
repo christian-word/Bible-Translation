@@ -1,5 +1,5 @@
 // Офлайн-кэш читалки. Увеличьте номер версии, если обновили файлы данных.
-const V = 'bible-v1';
+const V = 'bible-v1.1';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
