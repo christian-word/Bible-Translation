@@ -179,7 +179,9 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .chgrid button.picked{border-color:var(--accent);color:var(--accent);font-weight:700}
 .vgrid{grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:5px}
 .vgrid button{padding:8px 0;font-size:.95rem}
-.ver{margin-top:18px;padding:12px 14px;border:1px solid var(--rule);border-radius:10px;font:.88rem/1.5 var(--sans)}
+.about{margin-top:18px}
+.about a{display:inline-block;text-decoration:none;color:var(--accent)}
+.ver{margin-top:14px;padding:12px 14px;border:1px solid var(--rule);border-radius:10px;font:.88rem/1.5 var(--sans)}
 .ver b{font-size:.95rem}
 .ver p{margin:8px 0 0;color:var(--muted)}
 .ver u{text-decoration:none;color:var(--ink);font-weight:600}
@@ -311,8 +313,10 @@ textarea.note{width:100%;min-height:140px;padding:10px 12px;font:1rem/1.5 var(--
     <div class="sample" id="sample">Ибо так возлюбил Бог мир, что отдал Сына Своего Единородного.</div>
     <div class="row"><span class="lb">Закладки, выделения и заметки</span><div style="display:flex;gap:8px"><button class="btn" id="btnExp">Сохранить в файл</button><button class="btn" id="btnImp">Загрузить из файла</button></div></div>
     <input type="file" id="fileImp" accept="application/json" hidden>
+    <div class="about"><a class="btn" href="https://youtube.com/@redesign-i6n" target="_blank" rel="noopener noreferrer">Мультимедийный канал на YouTube</a></div>
     <div class="ver">
-      <b>Версия <span id="verNum">1.1</span></b>
+      <b>Версия <span id="verNum">1.1.1</span></b>
+      <p><u>Сделано в 1.1.1:</u> блок со ссылкой на мультимедийный канал в этом окне.</p>
       <p><u>Сделано в 1.1:</u> исправлено окно «Оглавление» на компьютере (главы всегда на виду); стрелки соседних глав в верхней панели; выбор стиха в оглавлении; выбор нескольких стихов подряд (Shift+клик или кнопка «Диапазон»); язык названий книг.</p>
       <p><u>Запланировано в 1.2:</u> поиск сразу по всем переводам; постоянная боковая панель книг на компьютере; картинка со стихом для публикации и проекции.</p>
     </div>
@@ -351,7 +355,7 @@ const store = {
 };
 
 /* ---------- состояние ---------- */
-const VERSION = '1.1';
+const VERSION = '1.1.1';
 const prefs = Object.assign({ theme:'auto', size:19, lh:1.7, layout:'verses', names:'auto', navVerse:false }, store.get('bs.prefs', {}));
 let marks = store.get('bs.marks', {});          // "BID|hub" -> {b,h,bm,hl,note}
 let IDX = null, MAP = null;
